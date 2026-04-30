@@ -56,6 +56,8 @@ jobs:
         git config --global push.autoSetupRemote true
     - name: Merge Pull request
       shell: bash
+      env:
+        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
       run: |
         # GitHub CLI api
         # https://cli.github.com/manual/gh_api
