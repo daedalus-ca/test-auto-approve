@@ -23,3 +23,5 @@ Test github pipeline to auto approve a flake bump.
   * github.com/<org>/ -> Settings -> Developer Settings -> GitHub Apps -> Select `auto-approve-app`
   * you find the app_id in the `General` section
 
+* FOO
+
