@@ -30,6 +30,7 @@ jobs:
 
   gitmerge:
     name: Merge flake bump
+    needs: gitlint  # hard dependency on this check job
     runs-on: ubuntu-latest
     steps:
     - name: Generate token
