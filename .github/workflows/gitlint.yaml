@@ -27,3 +27,30 @@ jobs:
     - name: Lint git commit messages
       run: |
         gitlint --commits origin/$GITHUB_BASE_REF.. -C .gitlint_auto_approve
+
+  gitmerge:
+    name: Merge flake bump
+    runs-on: ubuntu-latest
+    steps:
+    - name: Generate token
+      id: generate_token
+      uses: actions/create-github-app-token@v2
+      with:
+        app-id: ${{ secrets.GH_AUTO_APPROVE_APP_ID }}
+        private-key: ${{ secrets.GH_AUTO_APPROVE_APP_PRIVATE_KEY }}
+        owner: daedalus-ca
+        repositories: test-auto-approve
+    - name: Get App User ID
+      id: get_user_id
+      uses: octokit/request-action@v2.x
+      with:
+        route: "/users/${{ steps.generate_token.outputs.app-slug }}[bot]"
+      env:
+        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+    - name: Setup Git
+      shell: bash
+      run: |
+        git config --global --add safe.directory $PWD
+        git config --global user.name '${{ steps.generate_token.outputs.app-slug }}[bot]'
+        git config --global user.email '${{ fromJson(steps.get_user_id.outputs.data).id }}+${{ steps.generate_token.outputs.app-slug }}[bot]@users.noreply.github.com'
+        git config --global push.autoSetupRemote true
