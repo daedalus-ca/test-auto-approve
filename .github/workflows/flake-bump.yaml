@@ -41,20 +41,6 @@ jobs:
         private-key: ${{ secrets.GH_AUTO_APPROVE_APP_PRIVATE_KEY }}
         owner: daedalus-ca
         repositories: test-auto-approve
-    # - name: Get App User ID
-    #   id: get_user_id
-    #   uses: octokit/request-action@v2.x
-    #   with:
-    #     route: "/users/${{ steps.generate_token.outputs.app-slug }}[bot]"
-    #   env:
-    #     GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-    # - name: Setup Git
-    #   shell: bash
-    #   run: |
-    #     git config --global --add safe.directory $PWD
-    #     git config --global user.name '${{ steps.generate_token.outputs.app-slug }}[bot]'
-    #     git config --global user.email '${{ fromJson(steps.get_user_id.outputs.data).id }}+${{ steps.generate_token.outputs.app-slug }}[bot]@users.noreply.github.com'
-    #     git config --global push.autoSetupRemote true
     - name: Merge Pull request
       shell: bash
       env:
@@ -66,5 +52,5 @@ jobs:
           --method PUT \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2026-03-10" \
-          /repos/daedalus-ca/test-auto-approve/pulls/${{ github.event.number }}/merge \
+          /repos/${GITHUB_REPOSITORY}/pulls/${{ github.event.number }}/merge \
           -f 'merge_method=rebase'

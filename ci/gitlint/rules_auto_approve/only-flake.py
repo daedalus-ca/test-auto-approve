@@ -26,13 +26,11 @@ class SingleSpecificFile(CommitRule):
             changed_files = list(changed_files_stats.keys())
 
         if len(changed_files) != 1:
-            yield RuleViolation("commit-changes-multiple-files-or-none", f"Commit changes {len(changed_files)} files, expected exactly 1: {', '.join(changed_files)}")
-            return
+            return [RuleViolation("commit-changes-multiple-files-or-none", f"Commit changes {len(changed_files)} files, expected exactly 1: {', '.join(changed_files)}")]
 
         filepath = self.options["filepath"].value
-
         if changed_files[0] != filepath:
-            yield RuleViolation("commit-wrong-file", f"Commit changes '{changed_files[0]}', expected only '{filepath}'")
+            return [RuleViolation("commit-wrong-file", f"Commit changes '{changed_files[0]}', expected only '{filepath}'")]
 
 ####################
 # Usage of this rule
