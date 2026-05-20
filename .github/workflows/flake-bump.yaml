@@ -8,7 +8,7 @@ on:
 
 jobs:
   gitlint:
-    name: Check flake bump requirements
+    name: Flake bump
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
