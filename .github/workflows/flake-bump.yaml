@@ -26,25 +26,27 @@ jobs:
         pip install --upgrade gitlint
     # this rule checks the prerequisits and write the exit code in its output
     - name: Lint git commit messages
+      id: gitlint
       run: |
         set +e
         gitlint --commits origin/$GITHUB_BASE_REF.. -C .gitlint_auto_approve
         code=$?
+        if [ $code -eq 0 ]; then
+          echo "this merge request is eligible for a flake bump auto approve and merge"
+        else
+          echo "this merge request will not be automatically approved."
+        fi
         echo "exit_code=$code" >> "$GITHUB_OUTPUT"
         exit 0
-
-  gitmerge:
-    name: Merge flake bump
-    needs: gitlint  # hard dependency on this check job
-    if: ${{ needs.gitlint.outputs.exit_code == '0' }} # run only if gitlint run successful
-    runs-on: ubuntu-latest
-    steps:
+    # the following steps only run if gitlint run successful
     - name: Create variables
+      if: steps.gitlint.outputs.exit_code == '0'
       id: create_variable
       run: |
         REPO=$(echo ${GITHUB_REPOSITORY} | cut -f 2 -d '/')
         echo "repo=$REPO" >> "$GITHUB_OUTPUT"
     - name: Generate token
+      if: steps.gitlint.outputs.exit_code == '0' && steps.create_variable.outputs.repo != ''
       id: generate_token
       uses: actions/create-github-app-token@v2
       with:
@@ -53,6 +55,7 @@ jobs:
         owner: ${GITHUB_REPOSITORY_OWNER}
         repositories: ${{ steps.create_variable.outputs.repo }}
     - name: Merge Pull request
+      if: steps.gitlint.outputs.exit_code == '0' && steps.generate_token.outputs.token != ''
       shell: bash
       env:
         GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
