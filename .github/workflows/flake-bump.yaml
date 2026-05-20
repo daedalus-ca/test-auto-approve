@@ -52,7 +52,7 @@ jobs:
       with:
         app-id: ${{ secrets.GH_AUTO_APPROVE_APP_ID }}
         private-key: ${{ secrets.GH_AUTO_APPROVE_APP_PRIVATE_KEY }}
-        owner: ${GITHUB_REPOSITORY_OWNER}
+        owner: ${{ GITHUB_REPOSITORY_OWNER }}
         repositories: ${{ steps.create_variable.outputs.repo }}
     - name: Merge Pull request
       if: steps.gitlint.outputs.exit_code == '0' && steps.generate_token.outputs.token != ''
