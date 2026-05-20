@@ -44,7 +44,9 @@ jobs:
       id: create_variable
       run: |
         REPO=$(echo ${GITHUB_REPOSITORY} | cut -f 2 -d '/')
+        OWNER=$(echo ${GITHUB_REPOSITORY} | cut -f 1 -d '/')
         echo "repo=$REPO" >> "$GITHUB_OUTPUT"
+        echo "owner=$OWNER" >> "$GITHUB_OUTPUT"
     - name: Generate token
       if: steps.gitlint.outputs.exit_code == '0' && steps.create_variable.outputs.repo != ''
       id: generate_token
@@ -52,7 +54,7 @@ jobs:
       with:
         app-id: ${{ secrets.GH_AUTO_APPROVE_APP_ID }}
         private-key: ${{ secrets.GH_AUTO_APPROVE_APP_PRIVATE_KEY }}
-        owner: ${{ GITHUB_REPOSITORY_OWNER }}
+        owner: ${{ steps.create_variable.outputs.owner }}
         repositories: ${{ steps.create_variable.outputs.repo }}
     - name: Merge Pull request
       if: steps.gitlint.outputs.exit_code == '0' && steps.generate_token.outputs.token != ''
